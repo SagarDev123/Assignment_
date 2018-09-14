@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="imageview_minimum_width">10dp</dimen>
+    <dimen name="imageview_maximum_height">10dp</dimen>
+    <dimen name="imageview_minimum_height">10dp</dimen>
+    <dimen name="imageview_maximum_width">10dp</dimen>
+    <dimen name="margin_top_item_movie">5dp</dimen>
+
+</resources>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="app.mobile.com.newapptestapp.viewmodel.MovieItemViewModel" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/movieLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="5dp"
+        app:cardCornerRadius="5dp"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/posterImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_launcher"
+                bind:imageUrl="@{item.mPosterPath}" />
+
+            <TextView
+                android:id="@+id/titleMovie"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bariol_bold"
+                android:text="@{item.mTitle}"
+                android:textColor="@color/colorTitle"
+                android:textSize="8pt" />
+
+            <TextView
+                android:id="@+id/releaseDateMovie"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/bariol_regular"
+                android:text="@{item.mReleaseDate}"
+                android:textColor="@color/colorBlack"
+                android:textSize="6pt" />
+
+            <TextView
+                android:id="@+id/descMovie"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top_item_movie"
+                android:fontFamily="@font/bariol_regular"
+                android:text="@{item.mOverView}"
+                android:textColor="@color/colorDescriptions"
+                android:textSize="7pt" />
+
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</layout>

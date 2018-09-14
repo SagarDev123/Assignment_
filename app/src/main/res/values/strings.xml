@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AssignmentApp</string>
+    <string name="demo_title">IronMan</string>
+    <string name="demo_descriptions">The Dark Knight of Gotham City begins his war on crime with his first major enemy being the clownishly homicidal Joker, who has seized control of Gotham\'s underworld.</string>
+    <string name="no_search_text">Search !!</string>
+
+</resources>
