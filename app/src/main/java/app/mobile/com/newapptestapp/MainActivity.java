@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
         mViewBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mViewBinding.movieList.setLayoutManager(new LinearLayoutManager(this));
         mViewBinding.searchMovie.setOnQueryTextListener(this);
@@ -61,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     lists.add(movieItemViewModel);
                 }
 
-                if (lists != null && lists.size() > 0) {
+                if (lists.size() > 0) {
                     mViewBinding.movieList.setVisibility(View.VISIBLE);
                     mViewBinding.movieList.setAdapter(new MovieAdapter(lists));
                 }else {
