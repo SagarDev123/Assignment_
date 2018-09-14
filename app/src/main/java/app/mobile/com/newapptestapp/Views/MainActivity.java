@@ -6,13 +6,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.github.pwittchen.infinitescroll.library.InfiniteScrollListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import app.mobile.com.newapptestapp.Adapter.MovieAdapter;
 import app.mobile.com.newapptestapp.R;
@@ -31,9 +35,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     int totalResult = 0;
     int scrollToPosition = 0;
     int maxItemsPerRequest = 0;
+    boolean isFirstTime=true;
     List<MovieItemViewModel> lists;
     ProgressDialog mLoadMoreProgress;
-
+    String TAG = "MainActivity ";
     private SearchPagePresenter mSearchPagePresenter;
 
     @Override
@@ -164,12 +169,39 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         this.totalResult = totalResult;
 
         maxItemsPerRequest = totalResult / totalPages;
-        mViewBinding.movieList.addOnScrollListener(createInfiniteScrollListener());
+        Log.d(TAG, "Total page : " + totalPages);
+        Log.d(TAG, "Page number : " + pageNumber);
+        Log.d(TAG, "Total Result : " + totalResult);
+        Log.d(TAG, "maxItem : " + maxItemsPerRequest);
+        if (isFirstTime){
+            mViewBinding.movieList.addOnScrollListener(createInfiniteScrollListener());
+            isFirstTime=false;
+        }
         if (movieItemViewModels.size() > 0) {
             lists.addAll(movieItemViewModels);
         }
+        lists = removeDuplicates(lists);
+        Log.d(TAG, "List size : " + lists.size());
+        Log.d(TAG, "scrollToPosition : " + scrollToPosition);
         mViewBinding.movieList.setAdapter(new MovieAdapter(lists));
         mViewBinding.movieList.scrollToPosition(scrollToPosition);
+
     }
 
+    public List<MovieItemViewModel> removeDuplicates(List<MovieItemViewModel> list) {
+        Set set = new TreeSet(new Comparator() {
+
+            @Override
+            public int compare(Object o1, Object o2) {
+                if (((MovieItemViewModel) o1).getmTitle().equalsIgnoreCase(((MovieItemViewModel) o2).getmTitle())) {
+                    return 0;
+                }
+                return 1;
+            }
+        });
+        set.addAll(list);
+
+        final ArrayList newList = new ArrayList(set);
+        return newList;
+    }
 }
