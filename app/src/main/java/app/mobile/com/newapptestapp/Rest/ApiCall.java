@@ -18,17 +18,14 @@ public class ApiCall {
     private String query;
 
 
-    public ApiCall(ProgressBar mProgressBar, Delegate delegate, Context context,String query) {
-        this.mProgressBar = mProgressBar;
+    public ApiCall( Delegate delegate, Context context,String query) {
         this.delegate = delegate;
         this.context = context;
         this.query=query;
     }
 
     public void executeApi(){
-        if (mProgressBar.getVisibility()== View.GONE){
-             mProgressBar.setVisibility(View.VISIBLE);
-        }
+
 
         ApiCallInterFace apiCallInterFace = ApiClient.getClient().create(ApiCallInterFace.class);
         Call<Movie> call = apiCallInterFace.getMovieList(Constants.API_KEY,query);
@@ -36,7 +33,7 @@ public class ApiCall {
             @Override
             public void onResponse(Call<Movie> call, Response<Movie> response) {
                 int statusCode = response.code();
-                mProgressBar.setVisibility(View.GONE);
+
                 if(response.isSuccessful()) {
                     delegate.onSuccess(response.body());
                 } else {
@@ -47,13 +44,38 @@ public class ApiCall {
             @Override
             public void onFailure(Call<Movie> call, Throwable t) {
                 delegate.onFailure("On Failure - "+t.getMessage());
-                mProgressBar.setVisibility(View.GONE);
+
             }
         });
 
 
     }
+    public void executeLoadMoreApi(int pageNumber){
 
+
+        ApiCallInterFace apiCallInterFace = ApiClient.getClient().create(ApiCallInterFace.class);
+        Call<Movie> call = apiCallInterFace.getMovieList(Constants.API_KEY,query,pageNumber);
+        call.enqueue(new Callback<Movie>() {
+            @Override
+            public void onResponse(Call<Movie> call, Response<Movie> response) {
+                int statusCode = response.code();
+
+                if(response.isSuccessful()) {
+                    delegate.onSuccess(response.body());
+                } else {
+                    delegate.onFailure("On Failure - " + statusCode);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Movie> call, Throwable t) {
+                delegate.onFailure("On Failure - "+t.getMessage());
+
+            }
+        });
+
+
+    }
 
     public interface Delegate {
         void onSuccess(Movie movie);
