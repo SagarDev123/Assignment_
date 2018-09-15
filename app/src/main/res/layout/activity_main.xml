@@ -31,6 +31,7 @@
 
         </android.support.v7.widget.RecyclerView>
         <ProgressBar
+            android:visibility="gone"
             android:layout_below="@+id/movieList"
             android:layout_centerHorizontal="true"
             android:id="@+id/loadMoreProgressBar"

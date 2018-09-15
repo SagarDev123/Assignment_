@@ -221,13 +221,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             @Override
             public boolean isLoading() {
-                
+                mViewBinding.loadMoreProgressBar.setVisibility(View.VISIBLE);
                 // Indicate whether new page loading is in progress or not
                 return loadingInProgress;
             }
 
             @Override
             public boolean hasLoadedAllItems() {
+                mViewBinding.loadMoreProgressBar.setVisibility(View.GONE);
                 // Indicate whether all data (pages) are loaded or not
                 return hasLoadedAllItems;
             }
