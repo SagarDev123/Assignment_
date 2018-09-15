@@ -217,11 +217,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     Log.e("ON ELSE","ELSE");
                     hasLoadedAllItems = true;
                 }
-            
+            }
 
             @Override
             public boolean isLoading() {
-
+                
                 // Indicate whether new page loading is in progress or not
                 return loadingInProgress;
             }
