@@ -5,20 +5,15 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.github.pwittchen.infinitescroll.library.InfiniteScrollListener;
 import com.paginate.Paginate;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import app.mobile.com.newapptestapp.Adapter.MovieAdapter;
 import app.mobile.com.newapptestapp.R;
@@ -37,15 +32,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     int totalResult = 0;
     int scrollToPosition = 0;
     int maxItemsPerRequest = 0;
-    boolean isFirstTime = true;
     List<MovieItemViewModel> lists;
     ProgressDialog mLoadMoreProgress;
-    String TAG = "MainActivity ";
     private SearchPagePresenter mSearchPagePresenter;
     private Paginate paginate;
     private boolean loadingInProgress = false;
     private boolean hasLoadedAllItems = false;
-    private int offset = 1, totalItem = 0;
+    private int offset = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,18 +128,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
     }
 
-    private void LoadMore() {
-        if (InternetConnectivity.checkInternetConenction(this)) {
-            if (pageNumber <= totalPages) {
-                mLoadMoreProgress.show();
-                mSearchPagePresenter.onLoadMore(pageNumber + 1);
-            } else {
-                Toast.makeText(this, "No more data....", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(this, Constants.NO_INTERNET, Toast.LENGTH_SHORT).show();
-        }
-    }
+
 
     @Override
     public void onError(String error) {
@@ -171,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         Log.e("LIST SIZE",""+lists.size());
-        totalItem =lists.size();
+        
 
         mViewBinding.movieList.setAdapter(new MovieAdapter(lists));
         mViewBinding.movieList.scrollToPosition(scrollToPosition);
@@ -181,22 +163,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     }
 
-    public List<MovieItemViewModel> removeDuplicates(List<MovieItemViewModel> list) {
-        Set set = new TreeSet(new Comparator() {
 
-            @Override
-            public int compare(Object o1, Object o2) {
-                if (((MovieItemViewModel) o1).getmTitle().equalsIgnoreCase(((MovieItemViewModel) o2).getmTitle())) {
-                    return 0;
-                }
-                return 1;
-            }
-        });
-        set.addAll(list);
-
-        final ArrayList newList = new ArrayList(set);
-        return newList;
-    }
 
     private void setUpPagination() {
         Log.e("ON SETUP PAGINATION","DATA");
