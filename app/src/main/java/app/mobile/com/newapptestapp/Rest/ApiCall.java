@@ -1,6 +1,7 @@
 package app.mobile.com.newapptestapp.Rest;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -61,8 +62,10 @@ public class ApiCall {
                 int statusCode = response.code();
 
                 if(response.isSuccessful()) {
+                    Log.e("onsuccess","SUCCESS");
                     delegate.onSuccess(response.body());
                 } else {
+                    Log.e("ON ERROR",""+"ON E");
                     delegate.onFailure("On Failure - " + statusCode);
                 }
             }
@@ -70,6 +73,7 @@ public class ApiCall {
             @Override
             public void onFailure(Call<Movie> call, Throwable t) {
                 delegate.onFailure("On Failure - "+t.getMessage());
+                Log.e("ON FAILURE","ON E");
 
             }
         });

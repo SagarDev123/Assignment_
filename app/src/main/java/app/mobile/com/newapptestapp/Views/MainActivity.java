@@ -5,12 +5,14 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.github.pwittchen.infinitescroll.library.InfiniteScrollListener;
+import com.paginate.Paginate;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,11 +37,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     int totalResult = 0;
     int scrollToPosition = 0;
     int maxItemsPerRequest = 0;
-    boolean isFirstTime=true;
+    boolean isFirstTime = true;
     List<MovieItemViewModel> lists;
     ProgressDialog mLoadMoreProgress;
     String TAG = "MainActivity ";
     private SearchPagePresenter mSearchPagePresenter;
+    private Paginate paginate;
+    private boolean loadingInProgress = false;
+    private boolean hasLoadedAllItems = false;
+    private int offset = 1, totalItem = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +61,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mViewBinding.movieList.setLayoutManager(linearLayoutManager);
         mViewBinding.searchMovie.setOnQueryTextListener(this);
         mViewBinding.searchMovie.setOnCloseListener(this);
+       // setUpPagination();
+        /*mViewBinding.movieList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (mViewBinding.movieList.canScrollVertically(1)){
+                    Toast.makeText(MainActivity.this, "Last", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });*/
 
 
     }
@@ -101,27 +117,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         return false;
     }
 
-    private InfiniteScrollListener createInfiniteScrollListener() {
 
-        InfiniteScrollListener infiniteScrollListener = new InfiniteScrollListener(maxItemsPerRequest, linearLayoutManager) {
-            @Override
-            public void onScrolledToEnd(final int firstVisibleItemPosition) {
-                // load your items here
-                // logic of loading items will be different depending on your specific use case
-
-                // when new items are loaded, combine old and new items, pass them to your adapter
-                // and call refreshView(...) method from InfiniteScrollListener class to refresh RecyclerView
-
-                scrollToPosition = firstVisibleItemPosition;
-                LoadMore();
-
-
-            }
-        };
-
-
-        return infiniteScrollListener;
-    }
 
     @Override
     protected void onPause() {
@@ -141,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private void LoadMore() {
         if (InternetConnectivity.checkInternetConenction(this)) {
-            if (pageNumber != totalPages) {
+            if (pageNumber <= totalPages) {
                 mLoadMoreProgress.show();
                 mSearchPagePresenter.onLoadMore(pageNumber + 1);
             } else {
@@ -169,22 +165,19 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         this.totalResult = totalResult;
 
         maxItemsPerRequest = totalResult / totalPages;
-        Log.d(TAG, "Total page : " + totalPages);
-        Log.d(TAG, "Page number : " + pageNumber);
-        Log.d(TAG, "Total Result : " + totalResult);
-        Log.d(TAG, "maxItem : " + maxItemsPerRequest);
-        if (isFirstTime){
-            mViewBinding.movieList.addOnScrollListener(createInfiniteScrollListener());
-            isFirstTime=false;
-        }
+
         if (movieItemViewModels.size() > 0) {
             lists.addAll(movieItemViewModels);
         }
-        lists = removeDuplicates(lists);
-        Log.d(TAG, "List size : " + lists.size());
-        Log.d(TAG, "scrollToPosition : " + scrollToPosition);
+
+        Log.e("LIST SIZE",""+lists.size());
+        totalItem =lists.size();
+
         mViewBinding.movieList.setAdapter(new MovieAdapter(lists));
         mViewBinding.movieList.scrollToPosition(scrollToPosition);
+        if(offset==1){
+            setUpPagination();
+        }
 
     }
 
@@ -204,4 +197,46 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         final ArrayList newList = new ArrayList(set);
         return newList;
     }
+
+    private void setUpPagination() {
+        Log.e("ON SETUP PAGINATION","DATA");
+        if (paginate != null) {
+            paginate.unbind();
+        }
+
+        Paginate.Callbacks callbacks = new Paginate.Callbacks() {
+            @Override
+            public void onLoadMore() {
+                // Load next page of data (e.g. network or database)
+                offset++;
+                Log.e("ON LOAD MORE","offset: "+offset+" total pages:"+totalPages );
+                Log.e("total result:"+totalResult,"listsize "+lists.size());
+                if (offset == 2 || totalPages>=offset && totalResult>lists.size()) {
+                    mSearchPagePresenter.onLoadMore(offset);
+                } else {
+                    Log.e("ON ELSE","ELSE");
+                    hasLoadedAllItems = true;
+                }
+            
+
+            @Override
+            public boolean isLoading() {
+
+                // Indicate whether new page loading is in progress or not
+                return loadingInProgress;
+            }
+
+            @Override
+            public boolean hasLoadedAllItems() {
+                // Indicate whether all data (pages) are loaded or not
+                return hasLoadedAllItems;
+            }
+        };
+        paginate = Paginate.with(mViewBinding.movieList, callbacks)
+                .setLoadingTriggerThreshold(2)
+                .addLoadingListItem(true)
+                .build();
+    }
+
+
 }
